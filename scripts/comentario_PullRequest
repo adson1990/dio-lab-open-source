@@ -1,0 +1,42 @@
+import requests
+import time
+
+class GitHubConfig:
+    """Configurações relacionadas ao GitHub e ao repositório."""
+    TOKEN = 'github_pat_11ADJ2WNY0q9mJKiPFEPkJ_...' # expirado em Apr 14 2025
+    OWNER = 'digitalinnovationone'
+    REPO = 'dio-lab-open-source'
+    HEADERS = {
+        'Authorization': f'token {TOKEN}',
+        'Accept': 'application/vnd.github.v3+json'
+    }
+
+class ScriptConfig:
+    """Configurações específicas do script."""
+    PR_NUMBER = 1
+    COMMENT_BODY = "Este é um comentário de teste gerado por um script Python."
+    DELAY_SECONDS = 5
+
+def adicionar_comentario(pr_number, comment_body):
+    comment_data = {'body': comment_body}
+    try:
+        response = requests.post(
+            f'https://api.github.com/repos/{GitHubConfig.OWNER}/{GitHubConfig.REPO}/issues/{pr_number}/comments',
+            headers=GitHubConfig.HEADERS,
+            json=comment_data
+        )
+        response.raise_for_status()
+        print(f"Comentário adicionado ao PR #{pr_number}.")
+        return response.status_code
+    except requests.RequestException as e:
+        print(f"Erro ao adicionar comentário ao PR {pr_number}: {e}")
+        return None
+
+def main():
+    status_code = adicionar_comentario(ScriptConfig.PR_NUMBER, ScriptConfig.COMMENT_BODY)
+    if status_code:
+        print(f"Resposta: {status_code}")
+    time.sleep(ScriptConfig.DELAY_SECONDS)
+
+if __name__ == "__main__":
+    main()
